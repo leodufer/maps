@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      #map_canvas { height: 100% }
+    </style>
+    <script type="text/javascript"
+      src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBHiIuBV_WE8Vc9rNsurKkl75ziFdh8zXc&sensor=false">
+    </script>
+    <script type="text/javascript">
+
+   var  geocoder;
+   var marker;
+   var infoWindow;
+   var myStyles =[
+    {
+        featureType: "poi",
+        elementType: "labels",
+        stylers: [
+              { visibility: "off" }
+        ]
+     }
+    ];
+      function initialize() {
+        var mapOptions = {
+          center: new google.maps.LatLng(-25.5167, -54.6167),
+          zoom: 14,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          styles: myStyles 
+        };
+        geocoder = new google.maps.Geocoder();
+        infowindow = new google.maps.InfoWindow();
+        var map = new google.maps.Map(document.getElementById("map_canvas"),
+            mapOptions);
+
+
+        google.maps.event.addListener(map, 'click', function(e) {
+          geocoder.geocode(
+              {'latLng': e.latLng},
+              function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                  if (results[0]) {
+                    if (marker) {
+                      marker.setPosition(e.latLng);
+                    } else {
+                      marker = new google.maps.Marker({
+                         position: e.latLng,
+                         map: map});
+                    }
+                    infowindow.setContent(results[0].formatted_address);
+                    infowindow.open(map, marker);
+                    //log of console
+                    console.log(e.latLng);
+                    console.log(e.latLng.toString());
+                    console.log(e.latLng.lat());
+                    console.log(e.latLng.lng());
+                    // set value in input 
+                    document.getElementById("latitud").setAttribute("value", e.latLng.lat());
+                     document.getElementById("longitud").setAttribute("value", e.latLng.lng());
+                  } else {
+                    document.getElementById('geocoding').innerHTML =
+                        'No results found';
+                  }
+                } else {
+                  document.getElementById('geocoding').innerHTML =
+                      'Geocoder failed due to: ' + status;
+                }
+              });
+        });
+      }
+    </script>
+  </head>
+  <body onload="initialize()">
+    <div id="map_canvas" style="width:100%; height:100%"></div>
+    <input type="text" id="latitud" name="latitud">
+    <input type="text" id="longitud" name="longitud">
+  </body>
+</html>
